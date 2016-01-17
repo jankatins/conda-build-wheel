@@ -25,9 +25,7 @@ def main():
 
     parser.add_argument(
         '--wheel-dir',
-        nargs='*',
         default="./build",
-        action="store",
         metavar='WHEEL_DIR_PATH',
         help="Path to the directory where the wheels should be created.")
     parser.add_argument(
