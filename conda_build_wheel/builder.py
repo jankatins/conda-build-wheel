@@ -87,16 +87,16 @@ def build_wheel(recipe, versions_combis={"python": None, "numpy": None},
     with Locked(config.croot):
         # Don't use byte literals for paths in Python 2
         if not PY3:
-            arg = recipe.decode(getpreferredencoding() or 'utf-8')
+            recipe = recipe.decode(getpreferredencoding() or 'utf-8')
         if isfile(recipe):
-            if arg.endswith(('.tar', '.tar.gz', '.tgz', '.tar.bz2')):
+            if recipe.endswith(('.tar', '.tar.gz', '.tgz', '.tar.bz2')):
                 recipe_dir = tempfile.mkdtemp()
-                t = tarfile.open(arg, 'r:*')
+                t = tarfile.open(recipe, 'r:*')
                 t.extractall(path=recipe_dir)
                 t.close()
                 need_cleanup = True
             else:
-                print("Ignoring non-recipe: %s" % arg)
+                print("Ignoring non-recipe: %s" % recipe)
                 return
         else:
             recipe_dir = abspath(recipe)
