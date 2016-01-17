@@ -8,9 +8,7 @@
 from locale import getpreferredencoding
 import sys
 from os import environ as os_environ
-from collections import deque
 
-from conda.install import delete_trash
 from conda.compat import PY3
 from conda_build import exceptions
 from conda_build.main_build import all_versions
@@ -34,13 +32,6 @@ def build_wheel(recipe, versions_combis={"python": None, "numpy": None},
 
     import conda_build_wheel.build_wheel as build
 
-    if on_win:
-        # needs to happen before any c extensions are imported that might be
-        # hard-linked by files in the trash. one of those is markupsafe, used
-        # by jinja2. see https://github.com/conda/conda-build/pull/520
-        assert 'markupsafe' not in sys.modules
-        delete_trash(None)
-
     conda_version = {
         'python': 'CONDA_PY',
         'numpy': 'CONDA_NPY',
@@ -56,12 +47,12 @@ def build_wheel(recipe, versions_combis={"python": None, "numpy": None},
                 print("'all' is not supported for --%s" % lang)
         if len(versions) > 1:
             for ver in versions[:]:
-                setattr(versions_combis, lang, [str(ver)])
+                versions_combis[lang] = [str(ver)]
                 build_wheel(recipe, versions_combis, conda_channel_urls=conda_channel_urls,
                             conda_override_channels=conda_override_channels,
                             upload=upload, wheel_dir=wheel_dir)
                 # This is necessary to make all combinations build.
-                setattr(versions_combis, lang, versions)
+                versions_combis[lang] = versions
             return
         else:
             version = versions[0]

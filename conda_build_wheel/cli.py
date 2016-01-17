@@ -1,10 +1,13 @@
+
+
 import argparse
-import logging
+import sys
+
+from conda.cli.common import add_parser_channels
+from conda_build.main_build import PythonVersionCompleter, NumPyVersionCompleter
 
 import conda_build_wheel
 import conda_build_wheel.builder
-from conda.cli.common import add_parser_channels
-from conda_build.main_build import PythonVersionCompleter, NumPyVersionCompleter
 
 
 def main():
@@ -51,6 +54,14 @@ def main():
     add_parser_channels(parser)
 
     args = parser.parse_args()
+
+    if sys.platform == 'win32':
+        # needs to happen before any c extensions are imported that might be
+        # hard-linked by files in the trash. one of those is markupsafe, used
+        # by jinja2. see https://github.com/conda/conda-build/pull/520
+        assert 'markupsafe' not in sys.modules
+        from conda.install import delete_trash
+        delete_trash(None)
 
 
     b = conda_build_wheel.builder.build_wheel(args.recipe,
