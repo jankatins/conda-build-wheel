@@ -1,3 +1,7 @@
+Deprecated: use https://github.com/pypa/cibuildwheel
+====================================================
+
+
 conda build-wheel
 =================
 
